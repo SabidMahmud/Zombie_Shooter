@@ -32,7 +32,7 @@ game_state = MENU
 
 # Level tracking
 current_level = 1
-zombies_to_kill_for_boss = 15  # Number of zombies to kill before boss appears
+zombies_to_kill_for_boss = 3  # Number of zombies to kill before boss appears
 
 # Camera-related variables
 camera_pos = (0, 500, 500)
@@ -531,18 +531,22 @@ def update_boss():
     global boss, player_health, is_night, boss_exists
     
     if not boss:
+        update_lighting()
         return
         
     x, z, angle, health, state, projectile_timer = boss
 
     # If boss is dead, return to daytime
     if health <= 0:
-        is_night = False
+        is_night = False  # Set to daytime
+        boss_exists = False
+        return
     
-     # Update boss state based on health
+    # Update boss state based on health
     if health <= 0:
         boss_exists = False
         is_night = False  # Return to daytime when boss dies
+        update_lighting() # Update lighting to daytime  
         return
     
     # Calculate direction to player
@@ -683,10 +687,10 @@ def update():
         update_health_pickups()
         update_ammo_pickups()
         update_game_state()
-        update_lighting()  # Add this line
+        update_lighting()  # Update lighting based on time of day
     
     glutPostRedisplay()
-def draw_grid():
+def draw_grid(): 
     grid_size = field_size
     cell_size = 50  # Size of each grid cell
     
