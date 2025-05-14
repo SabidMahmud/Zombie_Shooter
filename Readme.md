@@ -2,6 +2,15 @@
 
 A simple 3D zombie survival shooter built with Python and OpenGL. Navigate a field, collect health and ammo pickups, and face off against waves of zombies and a boss enemy under dynamic day/night lighting.
 
+## Collaborators
+
+This project was developed by the following contributors:
+
+- **[Sabid Mahmud](https://github.com/sabidmahmud)**  
+- **[Labiba Zaman](https://github.com/LabibaZaman)**
+- **[Arrafy Prappo](https://github.com/RafyPrappo)**
+- **[Abdullah Farhan](https://github.com/Farhan-rafe)**
+
 ## Prerequisites
 
 * **Python 3.x** installed and added to your system PATH.
@@ -27,7 +36,7 @@ A simple 3D zombie survival shooter built with Python and OpenGL. Navigate a fie
      ├── Sec14_22299120-22201881-24241119-24241107_Spring2025.py 
      ├── ...
      ```
-   * To unzip, run this command: 
+   * To unzip, run this command:
 
      ```sh
      unzip OpenGL.zip     
@@ -37,7 +46,7 @@ A simple 3D zombie survival shooter built with Python and OpenGL. Navigate a fie
    The original game script is named `Sec14_22299120-22201881-24241119-24241107_Spring2025.py`. For ease of use, rename it:
 
    ```sh
-   mv Sec14_22299120-22201881-24241119-24241107_Spring2025.py app.py
+   mv Sec14_22299120-22201881-24241119-24241107_Spring2025.py ./app.py
    ```
 
 ## Running the Game
@@ -67,3 +76,5 @@ Use the following controls:
 For more detailed information about the game, see:
 
 * [Documentation](./DOCUMENTATION.md)
+
+```
