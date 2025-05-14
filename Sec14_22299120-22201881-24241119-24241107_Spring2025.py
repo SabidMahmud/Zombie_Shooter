@@ -11,7 +11,7 @@ is_night = False
 day_ambient = [0.5, 0.5, 0.5, 1.0]
 night_ambient = [0.1, 0.1, 0.2, 1.0]  # Dark blue-ish ambient at night
 current_ambient = day_ambient
-light_transition_speed = 0.01
+light_transition_speed = 0.5
 # Health pickups
 health_pickups = []  # Will store (x, z, amount, time_created)
 HEALTH_PICKUP_RADIUS = 10
@@ -31,8 +31,9 @@ GAME_OVER = 2
 game_state = MENU
 
 # Level tracking
+zombie_kill_count = 0
 current_level = 1
-zombies_to_kill_for_boss = 3  # Number of zombies to kill before boss appears
+zombies_to_kill_for_boss = 5  # Number of zombies to kill before boss appears
 
 # Camera-related variables
 camera_pos = (0, 500, 500)
@@ -135,12 +136,11 @@ OBSTACLE_ROCK = 1
 # Zombie variables
 zombies = []  # Will store (x, z, angle, health, state, is_boss) for each zombie
 zombie_radius = 15
-zombie_speed = 1
-zombie_damage = 10
-zombie_health = 50
+zombie_speed = 1 + (0.5*current_level)
+zombie_damage = 10 + (2*current_level)
+zombie_health = 50 + (10*current_level)
 zombie_spawn_timer = 0
 zombie_spawn_interval = 3000  # milliseconds
-zombie_kill_count = 0
 wave_zombie_limit = 5
 
 # Boss zombie variables
@@ -149,8 +149,12 @@ boss_zombie_radius = 30
 boss_zombie_damage = 20
 boss_zombie_speed = 1
 boss_exists = False
+if boss_exists:
+    current_level+=1
 
-NORMAL_ZOMBIE_DAMAGE = zombie_health
+
+NORMAL_ZOMBIE_DAMAGE = zombie_health #================================
+
 
 # Boss variables
 boss = None  # Will be (x, z, angle, health, state, projectile_timer) when spawned
@@ -220,17 +224,21 @@ def init_game():
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 def update_lighting():
     """Transition between day and night lighting"""
-    global current_ambient, is_night
+    global current_ambient,is_night, boss_exists, light_transition_speed
+
+    if boss_exists:
+        is_night = True
+    else:
+        is_night = False
     
     target_ambient = night_ambient if is_night else day_ambient
-    transition_speed = light_transition_speed * (2 if not is_night else 1)  # Faster transition to day
     
     # Smoothly transition ambient light
     for i in range(3):
         if current_ambient[i] < target_ambient[i]:
-            current_ambient[i] = min(current_ambient[i] + transition_speed, target_ambient[i])
+            current_ambient[i] = min(current_ambient[i] + light_transition_speed, target_ambient[i])
         elif current_ambient[i] > target_ambient[i]:
-            current_ambient[i] = max(current_ambient[i] - transition_speed, target_ambient[i])
+            current_ambient[i] = max(current_ambient[i] - light_transition_speed, target_ambient[i])
     
     # Update the lighting
     glLightfv(GL_LIGHT0, GL_AMBIENT, current_ambient)
@@ -531,22 +539,18 @@ def update_boss():
     global boss, player_health, is_night, boss_exists
     
     if not boss:
-        update_lighting()
         return
         
     x, z, angle, health, state, projectile_timer = boss
 
     # If boss is dead, return to daytime
     if health <= 0:
-        is_night = False  # Set to daytime
-        boss_exists = False
-        return
+        is_night = False
     
-    # Update boss state based on health
+     # Update boss state based on health
     if health <= 0:
         boss_exists = False
         is_night = False  # Return to daytime when boss dies
-        update_lighting() # Update lighting to daytime  
         return
     
     # Calculate direction to player
@@ -687,10 +691,10 @@ def update():
         update_health_pickups()
         update_ammo_pickups()
         update_game_state()
-        update_lighting()  # Update lighting based on time of day
+        update_lighting()  # Add this line
     
     glutPostRedisplay()
-def draw_grid(): 
+def draw_grid():
     grid_size = field_size
     cell_size = 50  # Size of each grid cell
     
@@ -728,28 +732,28 @@ def draw_walls():
     
     wall_thickness = 20
     
-    # North wall
+    # front wall
     glPushMatrix()
     glTranslatef(0, wall_height/2, -field_size/2)
     glScalef(field_size + wall_thickness*2, wall_height, wall_thickness)
     glutSolidCube(1)
     glPopMatrix()
     
-    # South wall
+    # back wall
     glPushMatrix()
     glTranslatef(0, wall_height/2, field_size/2)
     glScalef(field_size + wall_thickness*2, wall_height, wall_thickness)
     glutSolidCube(1)
     glPopMatrix()
     
-    # East wall
+    # left wall
     glPushMatrix()
     glTranslatef(field_size/2, wall_height/2, 0)
     glScalef(wall_thickness, wall_height, field_size)
     glutSolidCube(1)
     glPopMatrix()
     
-    # West wall
+    # right wall
     glPushMatrix()
     glTranslatef(-field_size/2, wall_height/2, 0)
     glScalef(wall_thickness, wall_height, field_size)
@@ -1243,7 +1247,7 @@ def draw_hud():
     glEnd()
     
     # Add level text (simulate with a different color block)
-    glColor3f(0.3, 0.3, 1.0)  # Lighter blue
+    glColor3f(1, 1, 1)  # Lighter blue
     glBegin(GL_QUADS)
     glVertex2f(20, 80)
     glVertex2f(20 + (current_level * 40), 80)  # Width based on level
@@ -1865,3 +1869,4 @@ class Weapon:
 
 if __name__ == "__main__":
     main()
+    
