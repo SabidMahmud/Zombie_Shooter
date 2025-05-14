@@ -64,6 +64,6 @@ Use the following controls:
 
 ## Documentation
 
-For more detailed information about the codebase and team conventions, see:
+For more detailed information about the game, see:
 
-* [Doc\_for\_team.md](./Doc_for_team.md)
+* [Documentation](./DOCUMENTATION.md)
